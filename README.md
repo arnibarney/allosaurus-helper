@@ -22,17 +22,32 @@ IPA-Phonemfolge → JSON → Browser (editierbar, Wortliste, JSON/CSV-Export)
 
 ## Voraussetzungen
 
-- Python 3.9+
+- **Python 3.10 oder neuer** (wichtig! Die Allosaurus-Abhängigkeit `panphon`
+  benutzt Typ-Syntax wie `str | None`, die erst ab Python 3.10 funktioniert.
+  Das mit macOS mitgelieferte CommandLineTools-Python 3.9 genügt **nicht**.)
 - `ffmpeg` im PATH (Audio-Konvertierung)
 - Ein moderner Browser (Chrome/Edge/Firefox)
 
 ## Installation
 
+### 1. Python 3.10+ besorgen (macOS)
+
+Falls `python3 --version` noch 3.9 zeigt, z. B. per Homebrew:
+
 ```bash
-cd ipa-allosaurus-tool
-python -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
+brew install python@3.12
+```
+
+oder den Installer von https://www.python.org/downloads/ verwenden.
+
+### 2. Projekt einrichten
+
+Alle Befehle aus dem Projektordner (`allosaurus-helper`) ausführen:
+
+```bash
+python3.12 -m venv .venv       # bzw. die Version deiner neuen Python-Installation
+source .venv/bin/activate     # Windows: .venv\Scripts\activate
+python -m pip install -r requirements.txt
 ```
 
 Beim allerersten Transkribieren lädt Allosaurus automatisch das Universal-Modell
@@ -40,29 +55,16 @@ Beim allerersten Transkribieren lädt Allosaurus automatisch das Universal-Model
 
 ## Starten
 
-Wichtig: Alle Befehle aus dem Projektordner (`allosaurus-helper`) ausführen.
-
-Falls `uvicorn: command not found` erscheint, liegt das meist an einer nicht
-aktivierten virtuellen Umgebung oder daran, dass pip in ein anderes Python
-installiert hat. Starte uvicorn deshalb sicherheitshalber immer über
-`python -m uvicorn`:
+Wichtig: uvicorn sicherheitshalber immer über `python -m uvicorn` starten,
+nie direkt über `uvicorn` (sonst droht `command not found`, wenn die falsche
+Python-Installation im PATH liegt):
 
 ```bash
-# macOS / Linux
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
+source .venv/bin/activate     # falls noch nicht aktiv
 python -m uvicorn backend.app:app --host 127.0.0.1 --port 8000
 ```
 
-Falls dann `No module named uvicorn` kommt, fehlt die Installation in genau
-diesem Python:
-
-```bash
-python -m pip install -r requirements.txt
-python -m uvicorn backend.app:app --host 127.0.0.1 --port 8000
-```
-
-Läuft der Server, erscheint eine Zeile wie
-`Uvicorn running on http://127.0.0.1:8000`.
+Läuft der Server, erscheint `Uvicorn running on http://127.0.0.1:8000`.
 
 Dann `frontend/index.html` im Browser öffnen (Doppelklick genügt) und die
 Backend-URL oben prüfen (Standard: http://127.0.0.1:8000).

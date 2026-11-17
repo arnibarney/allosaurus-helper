@@ -3,8 +3,6 @@
 import tempfile
 from pathlib import Path
 
-from allosaurus.app import read_recognizer
-
 # UI-Sprachcode -> Allosaurus/PHOIBLE-ID
 # 'ipa' = volles Inventar (~230 Phones), gut als Dialekt-Fallback.
 LANG_MAP = {
@@ -20,9 +18,30 @@ _recognizer = None
 
 
 def get_recognizer():
-    """Lädt das Universal-Modell beim ersten Aufruf (Download ~200 MB beim allerersten Mal)."""
-    global _recognizer
+    """Lädt das Universal-Modell beim ersten Aufruf (Download ~200 MB beim allerersten Mal).
+
+    Allosaurus wird bewusst lazy importiert: dadurch startet der Server auch dann,
+    wenn die Allosaurus-Abhängigkeiten fehlen oder inkompatibel sind, und meldet
+    einen verständlichen Fehler erst bei der ersten Transkription.
+    """
+    global _recognizer, read_recognizer
     if _recognizer is None:
+        try:
+            from allosaurus.app import read_recognizer as _read_recognizer
+            read_recognizer = _read_recognizer
+        except TypeError as exc:
+            # z. B. 'unsupported operand type(s) for |' unter Python 3.9
+            raise RuntimeError(
+                "Allosaurus konnte nicht geladen werden. Vermutlich ist dein Python zu alt: "
+                "die Abhängigkeit 'panphon' benötigt Python 3.10 oder neuer "
+                f"(Fehler: {exc}). Bitte Python 3.10+ installieren (siehe README)."
+            ) from exc
+        except ImportError as exc:
+            raise RuntimeError(
+                "Allosaurus ist nicht installiert. Bitte ausführen: "
+                "python -m pip install -r requirements.txt "
+                f"(Fehler: {exc})"
+            ) from exc
         _recognizer = read_recognizer()
     return _recognizer
 
