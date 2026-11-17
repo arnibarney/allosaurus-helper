@@ -1,4 +1,8 @@
-"""FastAPI-Backend: Audio-Upload -> IPA-Transkription via Allosaurus."""
+"""FastAPI-Backend: Audio-Upload -> IPA-Transkription via Allosaurus.
+
+Serve zusätzlich das Frontend unter http://127.0.0.1:8000/ (kein separates
+Öffnen von frontend/index.html nötig).
+"""
 
 import shutil
 import subprocess
@@ -7,12 +11,13 @@ from pathlib import Path
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from backend.recognizer import LANG_MAP, transcribe_wav
 
 app = FastAPI(title="IPA-Transkribierer (Allosaurus)")
 
-# Der Frontend-Container läuft separat (file://), daher einfache CORS-Freigabe für lokale Nutzung.
+# CORS offen halten, damit frontend/index.html auch per file:// geöffnet werden kann.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # nur lokal nutzen; bei echtem Betrieb einschränken
@@ -72,3 +77,10 @@ def transcribe(
             raise HTTPException(500, f"Allosaurus-Fehler: {exc}")
 
     return result
+
+
+# Frontend ausliefern: http://127.0.0.1:8000/ öffnet direkt die Web-App.
+# Muss als letztes stehen: der Mount fängt alle Pfade ein, die keine API-Route sind.
+FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
+if FRONTEND_DIR.is_dir():
+    app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")

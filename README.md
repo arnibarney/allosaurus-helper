@@ -66,14 +66,15 @@ python -m uvicorn backend.app:app --host 127.0.0.1 --port 8000
 
 Läuft der Server, erscheint `Uvicorn running on http://127.0.0.1:8000`.
 
-Dann `frontend/index.html` im Browser öffnen (Doppelklick genügt) und die
-Backend-URL oben prüfen (Standard: http://127.0.0.1:8000).
+**Dann einfach http://127.0.0.1:8000 im Browser öffnen** – das Backend liefert
+die Web-App direkt aus. (`frontend/index.html` darf weiterhin auch per
+Doppelklick geöffnet werden, die Backend-URL steht dann oben im Formular.)
 
 ## Komponenten
 
 | Datei | Zweck |
 | --- | --- |
-| `backend/app.py` | FastAPI: `/api/transcribe`, `/api/languages`, `/api/health` |
+| `backend/app.py` | FastAPI: `/api/transcribe`, `/api/languages`, `/api/health` + Frontend-Auslieferung |
 | `backend/recognizer.py` | Lädt Allosaurus einmal, wendet Sprach-Inventar an |
 | `frontend/index.html` | Web-App: Aufnehmen, IPA anzeigen/korrigieren, Wortliste, Export |
 | `scripts/test_recognizer.py` | CLI-Test ohne Browser: `python scripts/test_recognizer.py audio.wav gsw` |
