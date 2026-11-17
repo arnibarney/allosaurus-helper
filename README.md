@@ -40,9 +40,29 @@ Beim allerersten Transkribieren lädt Allosaurus automatisch das Universal-Model
 
 ## Starten
 
+Wichtig: Alle Befehle aus dem Projektordner (`allosaurus-helper`) ausführen.
+
+Falls `uvicorn: command not found` erscheint, liegt das meist an einer nicht
+aktivierten virtuellen Umgebung oder daran, dass pip in ein anderes Python
+installiert hat. Starte uvicorn deshalb sicherheitshalber immer über
+`python -m uvicorn`:
+
 ```bash
-uvicorn backend.app:app --host 127.0.0.1 --port 8000
+# macOS / Linux
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+python -m uvicorn backend.app:app --host 127.0.0.1 --port 8000
 ```
+
+Falls dann `No module named uvicorn` kommt, fehlt die Installation in genau
+diesem Python:
+
+```bash
+python -m pip install -r requirements.txt
+python -m uvicorn backend.app:app --host 127.0.0.1 --port 8000
+```
+
+Läuft der Server, erscheint eine Zeile wie
+`Uvicorn running on http://127.0.0.1:8000`.
 
 Dann `frontend/index.html` im Browser öffnen (Doppelklick genügt) und die
 Backend-URL oben prüfen (Standard: http://127.0.0.1:8000).
